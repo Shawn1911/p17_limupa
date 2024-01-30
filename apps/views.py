@@ -1,10 +1,12 @@
 from django.contrib.auth.views import LoginView
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import TemplateView, DetailView, ListView, FormView
 
-from apps.forms import RegisterForm
+from apps.forms import RegisterForm, EmailForm
 from apps.mixins import NotLoginRequiredMixin
-from apps.models import Blog, Category
+from apps.models import Blog, Category, Email
 
 
 class BlogListView(ListView):
@@ -43,3 +45,24 @@ class RegisterFormView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+class ProcessEmailView(View):
+    template_name = 'apps/index.html'
+    form_class = EmailForm
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+            if not Email.objects.filter(email=email).exists():
+                Email.objects.create(email=email)
+
+            return redirect('index_page')
+
+        return render(request, self.template_name, {'form': form})

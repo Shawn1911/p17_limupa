@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.safestring import mark_safe
 
-from apps.models import Category, Blog, Tag, Comment, User
+from apps.models import Category, Blog, Tag, Comment, User, Email
 from django.utils.translation import gettext_lazy as _
 
 
@@ -53,3 +53,6 @@ class BlogAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(Email)
+class EmailAdmin(admin.ModelAdmin):
+    pass
